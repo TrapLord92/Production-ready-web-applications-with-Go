@@ -26,6 +26,42 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 
 // Add a snippetCreate handler function.
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
+	// Use r.Method to check whether the request is using POST or not.
+	// if r.Method != "POST" {
+	// 	// If it's not, use the w.WriteHeader() method to send a 405 status
+	// 	// code and the w.Write() method to write a "Method Not Allowed"
+	// 	// response body. We then return from the function so that the
+	// 	// subsequent code is not executed.
+	// 	/*xxxxxxxxxxxxxx*/
+	// 	// Use the Header().Set() method to add an 'Allow: POST' header to the
+	// 	// response header map. The first parameter is the header name, and
+	// 	// the second parameter is the header value.
+	// 	w.Header().Set("Allow", "POST")
+	// 	w.WriteHeader(405)
+	// 	w.Write([]byte("Method Not Allowed"))
+	// 	return
+	// }
+	// http.Error shortcut
+	if r.Method != "POST" {
+		// w.Header().Set("Content-Type", "application/json")
+
+		w.Header().Set("Allow", "POST")
+		// Use the http.Error() function to send a 405 status code and "Method Not
+		// Allowed" string as the response body.
+		w.Header().Add("Cache-Control", "public")
+		w.Header().Add("Cache-Control", "max-age=31536000")
+		// Delete all values for the "Cache-Control" header.
+		w.Header().Del("Cache-Control")
+		http.Error(w, "Method Not Allowed", 405)
+		return
+	}
+	//The net/http constants
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", http.MethodPost)
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Write([]byte("Create a new snippet..."))
 }
 func main() {
