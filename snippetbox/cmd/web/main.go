@@ -10,7 +10,13 @@ import (
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	f, err := os.OpenFile("/tmp/info.log", os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	infoLog := log.New(f, "INFO\t", log.Ldate|log.Ltime)
+	// infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
@@ -29,6 +35,6 @@ func main() {
 	}
 	infoLog.Printf("Starting server on %s", *addr)
 	// Call the ListenAndServe() method on our new http.Server struct.
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe() // Remove the colon to avoid redeclaring `err`
 	errorLog.Fatal(err)
 }
