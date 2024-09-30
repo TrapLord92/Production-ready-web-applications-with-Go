@@ -51,16 +51,25 @@ func (m *SnippetModel) Insert(title string, content string, expires int) (int, e
 
 // Shorthand single-record queries
 func (m *SnippetModel) Get(id int) (*Snippet, error) {
+	// Define a complete SQL query to select fields from the snippets table.
+	query := `SELECT id, title, content, created, expires FROM snippets WHERE id = ?`
+
+	// Initialize a Snippet struct to hold the data.
 	s := &Snippet{}
-	err := m.DB.QueryRow("SELECT ...", id).Scan(&s.ID, &s.Title, &s.Content,
-		&s.Created, &s.Expires)
+
+	// Execute the query and scan the result into the Snippet struct fields.
+	err := m.DB.QueryRow(query, id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
+		// If no record is found, return the custom ErrNoRecord error.
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord
 		} else {
+			// For any other errors, return the error as is.
 			return nil, err
 		}
 	}
+
+	// Return the Snippet struct and nil error on success.
 	return s, nil
 }
 
