@@ -8,9 +8,11 @@ import (
 )
 
 // Include a Snippets field in the templateData struct.
+// Add a CurrentYear field to the templateData struct.
 type templateData struct {
-	Snippet  *models.Snippet
-	Snippets []*models.Snippet
+	CurrentYear int
+	Snippet     *models.Snippet
+	Snippets    []*models.Snippet
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
