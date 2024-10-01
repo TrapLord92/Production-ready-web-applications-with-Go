@@ -12,7 +12,7 @@ import (
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		app.notFound(w) // Use the notFound() helper
+		app.notFound(w)
 		return
 	}
 	snippets, err := app.snippets.Latest()
@@ -20,10 +20,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
-	}
-
 	files := []string{
 		"./ui/html/base.tmpl",
 		"./ui/html/partials/nav.tmpl",
@@ -31,15 +27,22 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		app.serverError(w, err) // Use the serverError() helper.
+		app.serverError(w, err)
 		return
 	}
-	err = ts.ExecuteTemplate(w, "base", nil)
+	// Create an instance of a templateData struct holding the slice of
+	// snippets.
+	data := &templateData{
+		Snippets: snippets,
+	}
+	// Pass in the templateData struct when executing the template.
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		app.serverError(w, err) // Use the serverError() helper.
-		return
+		app.serverError(w, err)
 	}
-} // Closing brace added here
+}
+
+// Closing brace added here
 
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
