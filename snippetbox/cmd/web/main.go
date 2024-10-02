@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
@@ -9,11 +10,6 @@ import (
 	"os"
 	"time"
 
-	// Import the models package that we just created. You need to prefix this with
-	// whatever module path you set up back in chapter 02.01 (Project Setup and Creating
-	// a Module) so that the import statement looks like this:
-	// "{your-module-path}/internal/models". If you can't remember what module path you
-	// used, you can find it at the top of the go.mod file.
 	"github.com/TrapLord92/Production-ready-web-applications-with-Go/internal/models"
 	"github.com/alexedwards/scs/mysqlstore" // New import
 	"github.com/alexedwards/scs/v2"         // New import
@@ -56,6 +52,7 @@ func main() {
 	// browser when a HTTPS connection is being used (and won't be sent over an
 	// unsecure HTTP connection).
 	sessionManager.Cookie.Secure = true
+
 	app := &application{
 		errorLog:       errorLog,
 		infoLog:        infoLog,
@@ -64,15 +61,21 @@ func main() {
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 	}
+	// Initialize a tls.Config struct to hold the non-default TLS settings we
+	// want the server to use. In this case the only thing that we're changing
+	// is the curve preferences value, so that only elliptic curves with
+	// assembly implementations are used.
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
+	// Set the server's TLSConfig field to use the tlsConfig variable we just
+	// created.
 	srv := &http.Server{
 		Addr:     *addr,
-		ErrorLog: errorLog,
-		Handler:  app.routes(),
+		ErrorLog: errorLog, Handler: app.routes(),
+		TLSConfig: tlsConfig,
 	}
 	infoLog.Printf("Starting server on %s", *addr)
-	// Use the ListenAndServeTLS() method to start the HTTPS server. We
-	// pass in the paths to the TLS certificate and corresponding private key as
-	// the two parameters.
 	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	errorLog.Fatal(err)
 }
