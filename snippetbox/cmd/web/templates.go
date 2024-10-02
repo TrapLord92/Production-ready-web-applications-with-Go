@@ -17,6 +17,7 @@ type templateData struct {
 	Form            any
 	Flash           string // Add a Flash field to the templateData struct.
 	IsAuthenticated bool   // Add an IsAuthenticated field to the templateData
+	CSRFToken       string // Add a CSRFToken field.
 }
 
 // Create a humanDate function which returns a nicely formatted string
