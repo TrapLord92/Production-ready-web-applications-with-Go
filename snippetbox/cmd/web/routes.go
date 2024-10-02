@@ -41,6 +41,10 @@ func (app *application) routes() http.Handler {
 		protected.ThenFunc(app.snippetCreatePost))
 	router.Handler(http.MethodPost, "/user/logout",
 		protected.ThenFunc(app.userLogoutPost))
+	//router for testing purposes
+	// Add a new GET /ping route.
+	router.HandlerFunc(http.MethodGet, "/ping", ping)
+
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 	return standard.Then(router)
 }
