@@ -4,23 +4,31 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
-	"time"
 
 	"github.com/go-sql-driver/mysql" // New import
 	"golang.org/x/crypto/bcrypt"
 	// New import
 )
 
+// forTest
+type UserModelInterface interface {
+	Insert(name, email, password string) error
+	Authenticate(email, password string) (int, error)
+	Exists(id int) (bool, error)
+}
+
+//for the app
+
 // Define a new User type. Notice how the field names and types align
 // with the columns in the database "users" table?
-type User struct {
-	ID int
+// type User struct {
+// 	ID int
 
-	Name           string
-	Email          string
-	HashedPassword []byte
-	Created        time.Time
-}
+// 	Name           string
+// 	Email          string
+// 	HashedPassword []byte
+// 	Created        time.Time
+// }
 
 // We'll use the Insert method to add a new record to the "users" table.
 type UserModel struct {

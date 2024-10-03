@@ -20,11 +20,22 @@ import (
 // Add a templateCache field to the application struct.
 // Add a formDecoder field to hold a pointer to a form.Decoder instance.
 // Add a new users field to the application struct.
-type application struct {
+/*type application struct {
 	errorLog       *log.Logger
 	infoLog        *log.Logger
 	snippets       *models.SnippetModel
 	users          *models.UserModel
+	templateCache  map[string]*template.Template
+	formDecoder    *form.Decoder
+	sessionManager *scs.SessionManager
+}*/
+// for testing, use the following:
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+	snippets models.SnippetModelInterface // Use our new interface type.
+	users    models.UserModelInterface
+	// Use our new interface type.
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
